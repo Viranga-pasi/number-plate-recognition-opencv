@@ -10,6 +10,9 @@ import pytesseract
 import io
 
 
+from getVehicleDetails import *
+
+
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'visionKey.json'
 
 
@@ -26,68 +29,9 @@ def get_image(img):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return img
 
-
-# return province on call
-def get_province(text):
-
-    provinces = {'SP': 'Southern Province',
-                 'WP': 'Western Province',
-                 'EP': 'Eastern Province',
-                 'NP': 'Nothern Province',
-                 'NW': 'North Western Province',
-                 'SG': 'Sabaragamuwa Province',
-                 'CP': 'Central Province',
-                 'NC': 'North Central Province',
-                 'UW': 'Uwa Province',
-                 }
-
-    if text in provinces.keys():
-        return provinces[text]
-
-    else:
-        return 'Province cannot detected'
-
-
-# return vehicle type on call
-def get_vehicle_type(text):
-    v_type = None
-
-    # if text is a string
-    if text.isalpha():
-        print(text)
-        to_array = list(text)
-        # cars
-        print(to_array)
-        if to_array[0] == 'C' or to_array[0] == 'K':
-            v_type = 'Car'
-        # Bike
-        elif to_array[0] == 'M' or to_array[0] == 'T' or to_array[0] == 'U' or to_array[0] == 'V' or to_array[0] == 'W' or to_array[0] == 'X' or to_array[0] == 'B':
-            v_type = 'Bike'
-        # Bus
-        elif to_array[0] == 'N':
-            v_type = 'Bus'
-        # Lorry
-        elif to_array[0] == 'L' or to_array[0] == 'D':
-            v_type = 'Lorry'
-        # Threewheel
-        elif to_array[0] == 'Q' or to_array[0] == 'Y' or to_array[0] == 'A':
-            v_type = 'Threewheel'
-        # Dual purpose vehicle
-        elif to_array[0] == 'P':
-            v_type = 'Dual Purpose Vehicle'
-        # Tractor
-        elif to_array[0] == 'R':
-            v_type = 'Tractor'
-        # Land master
-        elif to_array[0] == 'S':
-            v_type = 'Land master'
-        else:
-            v_type = 'Vehicle class cannot be detected'
-
-    return v_type
-
-
 # show images
+
+
 def show_plot(images, titles):
     # convert all images to gray scale
     plt.style.use('grayscale')
@@ -169,7 +113,7 @@ def main():
 
     # import image
 
-    img2 = get_image('army_jeep2.jpg')
+    img2 = get_image('pre.jpg')
 
     img = cv2.cvtColor(img2, cv2.COLOR_RGB2GRAY)
 
@@ -186,28 +130,16 @@ def main():
 
     image = vision_v1.types.Image(content=content)
 
-    response = vision_client.text_detection(image=image)
-    response = response.text_annotations
-    text = response[0].description
-    #crop = cv2.resize(crop.copy(), dsize=(184, 54))
+    # response = vision_client.text_detection(image=image)
+    # response = response.text_annotations
+    # text = response[0].description
+
     print(crop.shape)
     print(crop.dtype)
     print(crop)
 
-    #text = pytesseract.image_to_string(crop).upper()
-    #text = ''
-
-    #crop = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
-    #success, encoded_image = cv2.imencode('.jpg', crop)
-    #crop_ = encoded_image.tobytes()
-    # image.source.image_uri =
-    # image_uri = 'https://upload.wikimedia.org/wikipedia/commons/b/bf/Mobile_phone_IMEI.jpg'
-
-    # image.source.image_uri = a
-    #image = vision.Image(content=crop)
-    #response = vision_client.text_detection(image=image)
-
-    print(response)
+    text = ''
+    # print(response)
     print(text)
     print('Number Plate :', text)
 
@@ -237,6 +169,3 @@ def main():
 
     # show images
     show_plot(images, titles)
-
-
-main()
