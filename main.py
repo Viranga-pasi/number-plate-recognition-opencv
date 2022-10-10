@@ -105,7 +105,6 @@ def show_plot(images, titles):
     plt.show()
 
 
-
 # Return binary image by thresholding
 def make_binary(img):
     t = 150
@@ -136,3 +135,27 @@ def normalize_number_plate(img2):
     plt.title('Contour')
     plt.show()
     return img, edges, draw_cnt, draw_cnt_2, cnts
+
+
+# Crop image
+def crop_image(cnts, img):
+    plate = None
+    img3 = img.copy()
+    for i in cnts:
+        perimeter = cv2.arcLength(i, True)
+        edges_count = cv2.approxPolyDP(i, 10, True)
+
+        if len(edges_count) == 4:
+            plate = edges_count
+            break
+    # print(edges_count)
+    mask = np.zeros(img.shape, np.uint8)
+    new_img = cv2.drawContours(mask, [plate], 0, 255, -1)
+    new_img = cv2.bitwise_and(img, img, mask=mask)
+
+    (x, y) = np.where(mask == 255)
+
+    (x1, y1) = (np.min(x), np.min(y))
+    (x2, y2) = (np.max(x), np.max(y))
+    cropped_img = img[x1-10:x2+10, y1-10:y2+10]
+    return new_img, cropped_img
