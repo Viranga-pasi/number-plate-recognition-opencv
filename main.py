@@ -25,7 +25,7 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Users\USER\AppData\Local\Tesseract-
 
 # get source image
 def get_image(img):
-    img = cv2.imread(r'Samples/{}'.format(img), 1)
+    img = cv2.imread(img, 1)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return img
 
@@ -75,9 +75,9 @@ def normalize_number_plate(img2):
     cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:10]
 
     draw_cnt_2 = cv2.drawContours(img2.copy(), cnts, -1, (0, 255, 0))
-    plt.imshow(draw_cnt, cmap='gray')
-    plt.title('Contour')
-    plt.show()
+    # plt.imshow(draw_cnt, cmap='gray')
+    # plt.title('Contour')
+    # plt.show()
     return img, edges, draw_cnt, draw_cnt_2, cnts
 
 
@@ -106,14 +106,17 @@ def crop_image(cnts, img):
 
 
 # main funtion
-def main():
+def main(filename):
     # get vision
     vision_client = vision.ImageAnnotatorClient()
     image = vision.Image()
 
     # import image
 
-    img2 = get_image('pre.jpg')
+    #mg2 = get_image('pre.jpg')
+    print('location : ', filename)
+
+    img2 = get_image(filename)
 
     img = cv2.cvtColor(img2, cv2.COLOR_RGB2GRAY)
 
@@ -128,8 +131,7 @@ def main():
     with io.open('crop.jpg', 'rb') as image_file:
         content = image_file.read()
 
-    image = vision_v1.types.Image(content=content)
-
+    # image = vision_v1.types.Image(content=content)
     # response = vision_client.text_detection(image=image)
     # response = response.text_annotations
     # text = response[0].description
@@ -168,4 +170,6 @@ def main():
               'draw_cnt', 'mask image', 'cropped image']
 
     # show images
-    show_plot(images, titles)
+    #show_plot(images, titles)
+
+    return text
