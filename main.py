@@ -159,3 +159,84 @@ def crop_image(cnts, img):
     (x2, y2) = (np.max(x), np.max(y))
     cropped_img = img[x1-10:x2+10, y1-10:y2+10]
     return new_img, cropped_img
+
+
+# main funtion
+def main():
+    # get vision
+    vision_client = vision.ImageAnnotatorClient()
+    image = vision.Image()
+
+    # import image
+
+    img2 = get_image('army_jeep2.jpg')
+
+    img = cv2.cvtColor(img2, cv2.COLOR_RGB2GRAY)
+
+    blur, edges, draw_cnt, draw_cnt_2, cnts = normalize_number_plate(img2)
+
+    # extract number plate
+    plate, crop = crop_image(cnts, img)
+    cv2.imwrite('crop.jpg', crop)
+    h, w = crop.shape[::]
+    #crop_img = cv2.imread(r'crop.jpg', 0)
+
+    with io.open('crop.jpg', 'rb') as image_file:
+        content = image_file.read()
+
+    image = vision_v1.types.Image(content=content)
+
+    response = vision_client.text_detection(image=image)
+    response = response.text_annotations
+    text = response[0].description
+    #crop = cv2.resize(crop.copy(), dsize=(184, 54))
+    print(crop.shape)
+    print(crop.dtype)
+    print(crop)
+
+    #text = pytesseract.image_to_string(crop).upper()
+    #text = ''
+
+    #crop = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+    #success, encoded_image = cv2.imencode('.jpg', crop)
+    #crop_ = encoded_image.tobytes()
+    # image.source.image_uri =
+    # image_uri = 'https://upload.wikimedia.org/wikipedia/commons/b/bf/Mobile_phone_IMEI.jpg'
+
+    # image.source.image_uri = a
+    #image = vision.Image(content=crop)
+    #response = vision_client.text_detection(image=image)
+
+    print(response)
+    print(text)
+    print('Number Plate :', text)
+
+    if not text:
+        print('Number plate cannot detected')
+    else:
+        splited_text = text.split()
+        print(splited_text)
+
+        # return province
+        if splited_text[0].isalpha():
+            province = get_province(splited_text[0])
+            print(
+                'Vehicle Registered in : {} - {} '.format(splited_text[0], province))
+        else:
+            print('Province Cannot detected')
+
+        # return vehicle type
+        type = get_vehicle_type(splited_text[1])
+        print('Vehicle class is : {} - {} '.format(splited_text[1], type))
+
+    # images array
+    #images = [img2, blur, edges, draw_cnt, draw_cnt_2]
+    images = [img2, blur, edges, draw_cnt_2, plate, crop]
+    titles = ['original', 'smooth', 'edges',
+              'draw_cnt', 'mask image', 'cropped image']
+
+    # show images
+    show_plot(images, titles)
+
+
+main()
