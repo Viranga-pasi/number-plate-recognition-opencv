@@ -2,11 +2,10 @@
 
 ## Available Packages
 
-google.cloud\
-google.cloud\
+google.cloud vision api\
 PIL\
 numpy\
-matplotlib.pyplot\
+matplotlib\
 Opencv\
 os\
 glob\

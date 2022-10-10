@@ -41,7 +41,7 @@ def show_plot(images, titles):
 
     for i in range(len(images)):
         # plt.subplot(len(titles),1,i+1)
-        plt.subplot(3, 3, i+1)
+        plt.subplot(2, 3, i+1)
         plt.title(titles[i], size=FONT_SIZE, color=COLOR)
         plt.imshow(images[i])
         plt.axis('off')
@@ -131,45 +131,23 @@ def main(filename):
     with io.open('crop.jpg', 'rb') as image_file:
         content = image_file.read()
 
-    # image = vision_v1.types.Image(content=content)
-    # response = vision_client.text_detection(image=image)
-    # response = response.text_annotations
-    # text = response[0].description
+    image = vision_v1.types.Image(content=content)
+    response = vision_client.text_detection(image=image)
+    response = response.text_annotations
+    text = response[0].description
 
     print(crop.shape)
     print(crop.dtype)
     print(crop)
 
-    text = ''
+    # text = 'WP BBF 1233'
     # print(response)
-    print(text)
-    print('Number Plate :', text)
 
-    if not text:
-        print('Number plate cannot detected')
-    else:
-        splited_text = text.split()
-        print(splited_text)
-
-        # return province
-        if splited_text[0].isalpha():
-            province = get_province(splited_text[0])
-            print(
-                'Vehicle Registered in : {} - {} '.format(splited_text[0], province))
-        else:
-            print('Province Cannot detected')
-
-        # return vehicle type
-        type = get_vehicle_type(splited_text[1])
-        print('Vehicle class is : {} - {} '.format(splited_text[1], type))
-
-    # images array
-    #images = [img2, blur, edges, draw_cnt, draw_cnt_2]
     images = [img2, blur, edges, draw_cnt_2, plate, crop]
     titles = ['original', 'smooth', 'edges',
               'draw_cnt', 'mask image', 'cropped image']
 
     # show images
-    #show_plot(images, titles)
+    show_plot(images, titles)
 
     return text
