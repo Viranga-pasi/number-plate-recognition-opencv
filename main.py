@@ -85,3 +85,54 @@ def get_vehicle_type(text):
             v_type = 'Vehicle class cannot be detected'
 
     return v_type
+
+
+# show images
+def show_plot(images, titles):
+    # convert all images to gray scale
+    plt.style.use('grayscale')
+
+    # to remove background gray
+    plt.figure().patch.set_facecolor('white')
+
+    for i in range(len(images)):
+        # plt.subplot(len(titles),1,i+1)
+        plt.subplot(3, 3, i+1)
+        plt.title(titles[i], size=FONT_SIZE, color=COLOR)
+        plt.imshow(images[i])
+        plt.axis('off')
+
+    plt.show()
+
+
+
+# Return binary image by thresholding
+def make_binary(img):
+    t = 150
+    ret, thresh = cv2.threshold(img, t, 255, cv2.THRESH_BINARY_INV)
+
+    return thresh
+
+
+# Normalize the number plate
+def normalize_number_plate(img2):
+    img = cv2.cvtColor(img2, cv2.COLOR_RGB2GRAY)
+    # remove noise
+    blur = cv2.bilateralFilter(img, 17, 17, 17)  # 11, 90, 90
+    # sharpend_image = cv2.addWeighted(img, 2, blur, -1, 0)
+
+    edges = cv2.Canny(blur, 100, 200)
+
+    cnts, hierarchy = cv2.findContours(
+        edges.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    draw_cnt = cv2.drawContours(img2.copy(), cnts, -1, (255, 0, 0))
+    print(len(cnts))
+
+    cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:10]
+
+    draw_cnt_2 = cv2.drawContours(img2.copy(), cnts, -1, (0, 255, 0))
+    plt.imshow(draw_cnt, cmap='gray')
+    plt.title('Contour')
+    plt.show()
+    return img, edges, draw_cnt, draw_cnt_2, cnts
