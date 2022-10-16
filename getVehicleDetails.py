@@ -1,5 +1,3 @@
-from traceback import print_tb
-
 
 def get_vehicle_type(text):
     v_type = None
@@ -7,7 +5,9 @@ def get_vehicle_type(text):
     # if text is a string
     if text.isalpha():
         print(text)
+        text = text.upper()
         to_array = list(text)
+
         # cars
         print(to_array)
         if to_array[0] == 'C' or to_array[0] == 'K':
@@ -48,7 +48,7 @@ def get_vehicle_type(text):
 
 # return province on call
 def get_province(text):
-
+    text = text.upper()
     provinces = {'SP': 'Southern Province',
                  'WP': 'Western Province',
                  'EP': 'Eastern Province',
@@ -80,6 +80,8 @@ def vehicle_related(text):
     else:
         return 'Cannot detected'
 
+# return vehicle category using number
+
 
 def categorized_by_number(text):
     num = int(text.split('-')[0])
@@ -102,3 +104,35 @@ def categorized_by_number(text):
         return 'Diesel Lorry'
     else:
         return 'Cannot detected'
+
+
+def extract_text_eng_n_num(text):
+    # text = '30-2234'
+    text = text.replace(' ', '')
+    text = text.replace('-', '')
+    text = text.replace('+', '')
+
+    pro_code = None
+    v_model = None
+    if text[0].isalpha():
+        if len(text) == 9:
+            pro_code = text[:2]
+            v_model = text[2:5]
+
+        if len(text) == 8:
+            pro_code = text[:2]
+            v_model = text[2:4]
+
+    else:
+        text = text.replace('-', '')
+        text = text.replace(' ', '')
+
+        if len(text) == 7:
+
+            v_model = text[0:3]
+
+        if len(text) == 6:
+
+            v_model = text[0:2]
+
+    return pro_code, v_model

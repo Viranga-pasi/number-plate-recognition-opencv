@@ -1,10 +1,10 @@
 from cProfile import label
+from concurrent.futures import process
 from fileinput import filename
 import tkinter as tk
 from tkinter import *
 
 from tkinter import Canvas, filedialog, Text
-import os
 from PIL import Image, ImageTk
 
 
@@ -27,7 +27,7 @@ def open_image_eng():
     display_details_eng(text)
 
 
-def open_image_army():
+def open_image_si():
     filename = filedialog.askopenfilename(
         initialdir='F:\3rd Yr\CS 314 - Image Processing Practical\Project\Project\Samples', title='Select File', filetype=(("jpeg files", "*.jpg"), ("png files", "*.png"), ("all files", "*.*")))
     text = main(filename)
@@ -35,21 +35,10 @@ def open_image_army():
     display_original(filename)
     display_output()
     print(text)
-    display_details_army(text)
+    display_details_si(text)
 
 
-def open_image_by_number():
-    filename = filedialog.askopenfilename(
-        initialdir='F:\3rd Yr\CS 314 - Image Processing Practical\Project\Project\Samples', title='Select File', filetype=(("jpeg files", "*.jpg"), ("png files", "*.png"), ("all files", "*.*")))
-    text = main(filename)
-
-    display_original(filename)
-    display_output()
-    print(text)
-    display_details_by_number(text)
-
-
-def display_details_army(text):
+def display_details_si(text):
     print('Number Plate :', text)
     owner = ''
     if not text:
@@ -68,7 +57,8 @@ def display_details_army(text):
 
 def display_details_eng(text):
     print('Number Plate :', text)
-
+    pro_code, v_model = extract_text_eng_n_num(text)
+    print(pro_code, v_model)
     province = ''
     type = ''
     category = ''
@@ -76,20 +66,17 @@ def display_details_eng(text):
     if not text:
         print('Number plate cannot detected')
     else:
-        splited_text = text.split()
-        print(splited_text)
-
         # return province
-        if splited_text[0].isalpha():
-            province = get_province(splited_text[0])
+        if pro_code != None and pro_code.isalpha():
+            province = get_province(pro_code)
             print(
-                'Vehicle Registered in : {} - {} '.format(splited_text[0], province))
-            type = get_vehicle_type(splited_text[1])
-            if splited_text[0].isalpha():
+                'Vehicle Registered in : {} - {} '.format(pro_code, province))
+            type = get_vehicle_type(v_model)
+            if v_model.isalpha():
                 print(
-                    'Vehicle class is : {} - {} '.format(splited_text[1], type))
+                    'Vehicle class is : {} - {} '.format(v_model, type))
         else:
-            category = categorized_by_number(text)
+            category = categorized_by_number(v_model)
 
         # return vehicle type
 
@@ -157,7 +144,7 @@ open_file_en = tk.Button(root, text='Open Image with English Letters', padx=10,
 
 
 open_file_si = tk.Button(root, text='Open Image with Sinhala Letters', padx=10,
-                         pady=5, fg='white', bg='#263D42', command=open_image_army)
+                         pady=5, fg='white', bg='#263D42', command=open_image_si)
 
 
 exit_window = tk.Button(root, text='Exit', padx=10,

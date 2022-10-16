@@ -5,12 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 import os
-import glob
 import pytesseract
 import io
-
-
-from getVehicleDetails import *
 
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'visionKey.json'
@@ -57,13 +53,19 @@ def make_binary(img):
     return thresh
 
 
+def bilateral_filter(img):
+    blur = cv2.bilateralFilter(img, 17, 17, 17)
+    return blur
+
+
 # Normalize the number plate
 def normalize_number_plate(img2):
     img = cv2.cvtColor(img2, cv2.COLOR_RGB2GRAY)
     # remove noise
-    blur = cv2.bilateralFilter(img, 17, 17, 17)  # 11, 90, 90
-    # sharpend_image = cv2.addWeighted(img, 2, blur, -1, 0)
+    # blur = cv2.bilateralFilter(img, 17, 17, 17)  # 11, 90, 90
 
+    # sharpend_image = cv2.addWeighted(img, 2, blur, -1, 0)
+    blur = bilateral_filter(img)
     edges = cv2.Canny(blur, 100, 200)
 
     cnts, hierarchy = cv2.findContours(
@@ -73,7 +75,6 @@ def normalize_number_plate(img2):
     print(len(cnts))
 
     cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:10]
-
     draw_cnt_2 = cv2.drawContours(img2.copy(), cnts, -1, (0, 255, 0))
     # plt.imshow(draw_cnt, cmap='gray')
     # plt.title('Contour')
@@ -124,6 +125,8 @@ def main(filename):
 
     # extract number plate
     plate, crop = crop_image(cnts, img)
+
+    crop = bilateral_filter(crop)
     cv2.imwrite('crop.jpg', crop)
     h, w = crop.shape[::]
     #crop_img = cv2.imread(r'crop.jpg', 0)
@@ -135,6 +138,8 @@ def main(filename):
     response = vision_client.text_detection(image=image)
     response = response.text_annotations
     text = response[0].description
+
+    # text = 'wp CAL 2234'
 
     print(crop.shape)
     print(crop.dtype)
@@ -151,3 +156,39 @@ def main(filename):
     show_plot(images, titles)
 
     return text
+
+
+def extract_text():
+    text = '30-2234'
+    text = text.replace(' ', '')
+
+    pro_code = None
+    model = None
+    if text[0].isalpha():
+        if len(text) == 9:
+            pro_code = text[:2]
+            model = text[2:5]
+
+        if len(text) == 8:
+            pro_code = text[:2]
+            model = text[2:4]
+
+    else:
+        text = text.replace('-', '')
+        text = text.replace(' ', '')
+
+        if len(text) == 7:
+
+            model = text[0:3]
+
+        if len(text) == 6:
+
+            model = text[0:2]
+
+    print(pro_code, model)
+
+
+# extract_text()
+
+
+# 10084654
