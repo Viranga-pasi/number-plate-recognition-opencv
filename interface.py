@@ -23,7 +23,7 @@ def open_image_eng():
 
     display_original(filename)
     display_output()
-    print(text)
+    print('output by main : ', text)
     display_details_eng(text)
 
 
@@ -34,20 +34,21 @@ def open_image_si():
 
     display_original(filename)
     display_output()
-    print(text)
+    print('output by main : ', text)
     display_details_si(text)
 
 
 def display_details_si(text):
     print('Number Plate :', text)
+    number_plate, v_model = extract_text_si(text)
     owner = ''
     if not text:
         print('Number plate cannot detected')
     else:
-        owner = vehicle_related(text)
+        owner = vehicle_related(number_plate)
 
     numberplate_text = Label(
-        root, text='Number plate : {}'.format(text), fg='red', font=("Helvetica", 14))
+        root, text='Number plate : {}'.format(number_plate), fg='red', font=("Helvetica", 14))
     numberplate_text.pack()
 
     province_text = Label(

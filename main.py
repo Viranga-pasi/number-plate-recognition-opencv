@@ -1,3 +1,4 @@
+from cmath import isnan
 from google.cloud import vision
 from google.cloud import vision_v1
 from PIL import Image
@@ -158,37 +159,32 @@ def main(filename):
     return text
 
 
-def extract_text():
-    text = '30-2234'
+def extract_text(text):
+
     text = text.replace(' ', '')
+    text = text.replace('-', '')
+    text = text.replace('+', '')
 
-    pro_code = None
+    number_plate = None
     model = None
-    if text[0].isalpha():
-        if len(text) == 9:
-            pro_code = text[:2]
-            model = text[2:5]
-
+    print(text)
+    if text[0].isdigit():
         if len(text) == 8:
-            pro_code = text[:2]
-            model = text[2:4]
-
-    else:
-        text = text.replace('-', '')
-        text = text.replace(' ', '')
-
+            model = text[:3]
+            number_plate = text[:3] + ' SRI ' + text[4:]
         if len(text) == 7:
-
-            model = text[0:3]
-
+            model = text[:2]
+            number_plate = text[:2] + ' SRI ' + text[3:]
         if len(text) == 6:
+            model = text[:1]
+            number_plate = text[:1] + ' SRI ' + text[2:]
+    else:
+        number_plate = text
 
-            model = text[0:2]
-
-    print(pro_code, model)
+    print(number_plate, model)
 
 
-# extract_text()
+# extract_text('යුහ 084657')
 
 
 # 10084654

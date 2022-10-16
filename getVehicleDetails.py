@@ -77,6 +77,8 @@ def vehicle_related(text):
         return 'Navy'
     elif to_array[0] == 'ග':
         return 'Air Force'
+    elif to_array[0].isdigit():
+        return categorized_by_number(text.split('SRI')[0])
     else:
         return 'Cannot detected'
 
@@ -84,7 +86,7 @@ def vehicle_related(text):
 
 
 def categorized_by_number(text):
-    num = int(text.split('-')[0])
+    num = int(text)
 
     if (num > 1 and 21 > num) or (num > 300 and 303 > num):
         return 'Petrol Vehilce'
@@ -136,3 +138,28 @@ def extract_text_eng_n_num(text):
             v_model = text[0:2]
 
     return pro_code, v_model
+
+
+def extract_text_si(text):
+
+    text = text.replace(' ', '')
+    text = text.replace('-', '')
+    text = text.replace('+', '')
+
+    number_plate = None
+    v_model = None
+    print(text)
+    if text[0].isdigit():
+        if len(text) == 8:
+            v_model = text[:3]
+            number_plate = text[:3] + ' SRI ' + text[4:]
+        if len(text) == 7:
+            v_model = text[:2]
+            number_plate = text[:2] + ' SRI ' + text[3:]
+        if len(text) == 6:
+            v_model = text[:1]
+            number_plate = text[:1] + ' SRI ' + text[2:]
+    else:
+        number_plate = text
+
+    return number_plate, v_model
